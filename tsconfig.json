@@ -1,0 +1,67 @@
+{
+  "compilerOptions": {
+    /* ── Target & Module ─────────────────────────────────── */
+    "target": "ES2022", // modern JS, supports top-level await
+    "module": "NodeNext", // proper ESM/CJS interop for Node.js
+    "moduleResolution": "NodeNext", // resolves .js extensions correctly
+    "lib": ["ES2022"], // no DOM — this is a backend app
+    "types": ["node"], // include Node.js types
+
+    /* ── Strict Type Safety (SSDLC core) ────────────────── */
+    "strict": true, // enables all strict checks below:
+    "strictNullChecks": true, //   no silent null/undefined bugs
+    "strictFunctionTypes": true, //   prevents unsafe callback signatures
+    "strictBindCallApply": true, //   type-safe .bind/.call/.apply
+    "strictPropertyInitialization": true, //   no uninitialized class properties
+    "noImplicitAny": true, //   no silent any types
+    "noImplicitThis": true, //   no untyped this context
+    "alwaysStrict": true, //   emits "use strict" in every file
+
+    /* ── Additional Safety Checks ───────────────────────── */
+    "noUnusedLocals": true, // dead code = hidden attack surface
+    "noUnusedParameters": true, // unused params often indicate logic bugs
+    "noImplicitReturns": true, // every code path must return explicitly
+    "noFallthroughCasesInSwitch": true, // prevents unintended switch fallthrough
+    "noUncheckedIndexedAccess": true, // arr[i] returns T | undefined, forces null check
+    "noPropertyAccessFromIndexSignature": true, // explicit access on dynamic keys
+    "exactOptionalPropertyTypes": true, // distinguishes undefined from missing key
+    "skipLibCheck": true, // skip type checking of node_modules for faster builds (assumes dependencies are well-typed)
+    "useUnknownInCatchVariables": true, // catch(e) is unknown not any — safer error handling
+
+    /* ── Emit ────────────────────────────────────────────── */
+    "outDir": "./dist",
+    "rootDir": ".",
+    "removeComments": true, // strip comments from dist (no info leakage)
+
+    /* ── Module Safety ───────────────────────────────────── */
+    "esModuleInterop": true, // safe CommonJS/ESM interop
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true, // prevents case-sensitivity bugs across OS
+    "isolatedModules": true, // each file is independent — safer for bundlers
+
+    /* ── Path Aliases ────────────────────────────────────── */
+    "paths": {
+      "@/*": ["./src/*"],
+      "@cache": ["./src/database/cache"],
+      "@models": ["./src/database/models"],
+      "@repository": ["./src/database/repository"],
+      "@enums": ["./src/common/enums"],
+      "@types": ["./src/common/types"],
+      "@utils": ["./src/common/utils"],
+      "@interfaces": ["./src/common/interfaces"],
+      "@security": ["./src/common/utils/security"],
+      "@auth": ["./src/modules/auth"],
+      "@user": ["./src/modules/user"],
+      "@post": ["./src/modules/post"],
+      "@comment": ["./src/modules/comment"],
+      "@response": ["./src/middleware/response"],
+      "@config": ["./config/env.service"]
+    },
+
+    /* ── Decorators (if using class-based models/validators) */
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
+  },
+  "include": ["src", "config"],
+  "exclude": ["node_modules", "dist"]
+}
