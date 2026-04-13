@@ -24,30 +24,33 @@ import type {
   DeleteManyParams,
   FindOneAndDeleteParams,
   FindByIdAndDeleteParams,
-  CreateParams,
+  CreateSingleParams,
+  CreateMultipleParams,
 } from "@types";
 
 abstract class DBRepository<TRawDoc> {
   constructor(public model: Model<TRawDoc>) {}
 
   async create(
-    params: CreateParams<TRawDoc>,
+    params: CreateSingleParams<TRawDoc>,
   ): Promise<HydratedDocument<TRawDoc>>;
 
   async create(
-    params: CreateParams<TRawDoc>,
+    params: CreateMultipleParams<TRawDoc>,
   ): Promise<HydratedDocument<TRawDoc>[]>;
 
-  async create({
-    data,
-    options,
-  }: CreateParams<TRawDoc>): Promise<
-    HydratedDocument<TRawDoc>[] | HydratedDocument<TRawDoc>
-  > {
-    if (Array.isArray(data))
-      return await this.model.create(data as any, options);
+  async create(
+    params: CreateSingleParams<TRawDoc> | CreateMultipleParams<TRawDoc>,
+  ): Promise<HydratedDocument<TRawDoc> | HydratedDocument<TRawDoc>[]> {
+    const { data } = params;
+    const options = "options" in params ? params.options : undefined;
 
-    return await this.model.create(data as any);
+    if (Array.isArray(data)) {
+      const result = await this.model.insertMany(data as any, options!);
+      return result as unknown as HydratedDocument<TRawDoc>[];
+    }
+
+    return (await this.model.create(data as any)) as HydratedDocument<TRawDoc>;
   }
 
   async find(

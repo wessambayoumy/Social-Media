@@ -14,12 +14,15 @@ import type {
 /**
  * Parameters for create operation (single document)
  */
+export interface CreateSingleParams<TRawDoc> {
+  data: Partial<TRawDoc>;
+}
 
 /**
  * Parameters for create operation (multiple documents)
  */
-export interface CreateParams<TRawDoc> {
-  data: Partial<TRawDoc[]>;
+export interface CreateMultipleParams<TRawDoc> {
+  data: Partial<TRawDoc>[];
   options?: CreateOptions;
 }
 
