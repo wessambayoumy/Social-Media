@@ -1,10 +1,11 @@
 {
+  "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
     /* ── Target & Module ─────────────────────────────────── */
-    "target": "ES2022", // modern JS, supports top-level await
+    "target": "ES2023", // modern JS, supports top-level await
     "module": "NodeNext", // proper ESM/CJS interop for Node.js
     "moduleResolution": "NodeNext", // resolves .js extensions correctly
-    "lib": ["ES2022"], // no DOM — this is a backend app
+    "lib": ["ES2023"], // no DOM — this is a backend app
     "types": ["node"], // include Node.js types
 
     /* ── Strict Type Safety (SSDLC core) ────────────────── */
@@ -46,6 +47,7 @@
       "@models": ["./src/database/models"],
       "@repository": ["./src/database/repository"],
       "@enums": ["./src/common/enums"],
+      "@services": ["./src/common/services"],
       "@types": ["./src/common/types"],
       "@utils": ["./src/common/utils"],
       "@interfaces": ["./src/common/interfaces"],
@@ -54,8 +56,7 @@
       "@user": ["./src/modules/user"],
       "@post": ["./src/modules/post"],
       "@comment": ["./src/modules/comment"],
-      "@response": ["./src/middleware/response"],
-      "@config": ["./config/env.service"]
+      "@response": ["./src/middleware/response"]
     },
 
     /* ── Decorators (if using class-based models/validators) */

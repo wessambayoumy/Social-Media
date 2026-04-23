@@ -1,0 +1,24 @@
+meta {
+  name: Sign \Out
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/auth/signOut
+  body: none
+  auth: bearer
+}
+
+headers {
+  User-Agent: insomnia/12.5.0
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OWRiZWVkYzE4YjBiMDE1YmY4OWY4ZGIiLCJlbWFpbCI6Indlc0BnbWFpbC5jb20iLCJyb2xlIjoiMSIsImlhdCI6MTc3NjA5MjA5NSwiZXhwIjoxNzc2Njk2ODk1LCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjMwMDAiLCJqdGkiOiI5Y2U0ODczMC00NjIzLTRhNDktYTJhOS1kNDIzYWMyYzk5ZDMifQ.JC59PWbwCIjaN4wEVEyC4g6Tw4cBC74oIBAYSKePma4
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

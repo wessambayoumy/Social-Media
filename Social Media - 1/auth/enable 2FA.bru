@@ -1,0 +1,24 @@
+meta {
+  name: enable 2FA
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/auth/enable2FA
+  body: none
+  auth: bearer
+}
+
+headers {
+  User-Agent: insomnia/12.5.0
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OWUzOGNhYjQ0M2U1Njg4ZjlkY2IwMmMiLCJpYXQiOjE3NzY1MjAzNzcsImV4cCI6MTc3NzEyNTE3NywiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDozMDAwIiwianRpIjoiNTliMDI1ZDctMWZiMS00NGI0LTk2ZTItODU3MzhlNDVkMjg0In0.ZFLnUU8aks_jBlie-YBIdrwDeYJZQLE9ZaWFhaI5cWo
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -1,12 +1,12 @@
-import { hashSync, compareSync } from "bcrypt";
-import { env } from "@config";
+import { hash, compare } from "bcrypt";
+import { env } from "@services";
 
 class HashService {
-  hash = (data: string | Buffer<ArrayBufferLike>) =>
-    hashSync(data, env.saltRounds);
+  hash = async (data: string | Buffer<ArrayBufferLike>) =>
+    await hash(data, env.saltRounds);
 
-  compareHash = (plain: string | Buffer<ArrayBufferLike>, hash: string) =>
-    compareSync(plain, hash);
+  compareHash = async (plain: string | Buffer<ArrayBufferLike>, hash: string) =>
+    await compare(plain, hash);
 }
 
-export default HashService;
+export default new HashService();

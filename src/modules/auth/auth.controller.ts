@@ -1,32 +1,78 @@
-import { Router } from "express";
-import AuthService from "./auth.service";
+import { Router, Request, Response } from "express";
 import * as authValidation from "./auth.validation";
 import { authMiddleware, validationMiddleware } from "@/middleware";
+import authService from "./auth.service";
 
 const authRouter = Router();
 
-const authService = new AuthService();
+authRouter.post("/refreshToken", async (req: Request, res: Response) => {
+  const token = await authService.refreshToken(req.body.token);
+  res.json({ message: "New access token generated", token });
+});
+
 authRouter.post(
   "/signUp",
   validationMiddleware(authValidation.signUpSchema),
-  async (req, res) => {
+  async (req: Request, res: Response) => {
     const user = await authService.signUp(req.body);
-
     res.json({ message: "User registered successfully", user });
+  },
+);
+authRouter.post(
+  "/signUpWithGoogle",
+  validationMiddleware(authValidation.googleSignUpSchema),
+  async (req, res) => {
+    const tokens = await authService.signUpWithGoogle(req.body.idToken);
+    res.status(201).json({ message: "user created successfully", tokens });
   },
 );
 authRouter.post(
   "/signIn",
   validationMiddleware(authValidation.signInSchema),
-  async (req, res) => {
-    const { user, token } = await authService.signIn(req.body);
-
-    res.json({ message: "User signed in successfully", user, token });
+  async (req: Request, res: Response) => {
+    const data = await authService.signIn(req.body);
+    res.json({ message: "User signed in successfully", data });
   },
 );
 
-authRouter.post("/signOut", authMiddleware, async (_req, res) => {
-  res.json({ message: "User signed out successfully" });
+authRouter.post("/verifyOtp", async (req: Request, res: Response) => {
+  await authService.verifyOtp(req.body);
+  res.status(200).json({ message: "2FA verified successfully" });
+});
+
+authRouter.patch("/resetPassword", async (req: Request, res: Response) => {
+  const user = await authService.resetPassword(req.body.email);
+  res.json({ message: "Password reset successfully", user });
+});
+
+authRouter.use(authMiddleware);
+
+authRouter.post("/signOut", async (req: Request, res: Response) => {
+  const signed = await authService.signOut(req.token);
+  res.json({ message: "User signed out successfully", signed });
+});
+
+authRouter.post("/signOutFromAll", async (req: Request, res: Response) => {
+  const signed = await authService.signOutFromAll(req.userId);
+  res.json({
+    message: "User signed out from all devices successfully",
+    signed,
+  });
+});
+
+authRouter.patch("/updatePassword", async (req: Request, res: Response) => {
+  const user = await authService.updatePassword(req.body, req.userId);
+  res.json({ message: "Password updated successfully", user });
+});
+
+authRouter.post("/enable2FA", async (req: Request, res: Response) => {
+  await authService.enable2FA(req.userId);
+  res.json({ message: "please check your email for the otp" });
+});
+
+authRouter.post("/disable2FA", async (req: Request, res: Response) => {
+  await authService.disable2FA(req.userId);
+  res.json({ message: "please check your email for the otp" });
 });
 
 export default authRouter;

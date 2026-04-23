@@ -1,17 +1,20 @@
 import dotenv from "dotenv";
 import { resolve } from "node:path";
-import { StringValue } from "ms";
+
 
 const nodeEnv = process.env["NODE_ENV"] ?? "dev";
 dotenv.config({ path: resolve(`config/.env.${nodeEnv}`) });
 
-export const env = {
+const env = {
   port: Number(process.env["PORT"]),
   mongoUri: process.env["MONGO_URI"] as string,
   saltRounds: Number(process.env["SALT_ROUNDS"]),
-  jwtExpiry: process.env["JWT_EXPIRY"] as StringValue,
-  jwtAdminSecret: process.env["JWT_SIGNATURE_ADMIN"] as string,
-  jwtUserSecret: process.env["JWT_SIGNATURE_USER"] as string,
+  jwtExpiryAccess: Number(process.env["JWT_EXPIRY_ACCESS"] ),
+  jwtExpiryRefresh: Number(process.env["JWT_EXPIRY_REFRESH"] ),
+  jwtAdminSecretAccess: process.env["JWT_SIGNATURE_ADMIN_ACCESS"] as string,
+  jwtAdminSecretRefresh: process.env["JWT_SIGNATURE_ADMIN_REFRESH"] as string,
+  jwtUserSecretAccess: process.env["JWT_SIGNATURE_USER_ACCESS"] as string,
+  jwtUserSecretRefresh: process.env["JWT_SIGNATURE_USER_REFRESH"] as string,
   jwtIssuer: process.env["JWT_ISSUER"] as string,
   encryptionKey: process.env["ENCRYPTION_KEY"] as string,
   emailUser: process.env["EMAIL_USER"] as string,
@@ -22,3 +25,5 @@ export const env = {
   rateLimitTime: Number(process.env["RATE_LIMIT_TIME"]),
   corsOrigins: process.env["CORS_ORIGINS"]?.split(",") as string[],
 };
+
+export default env;

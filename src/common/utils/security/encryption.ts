@@ -1,4 +1,4 @@
-import { env } from "@config";
+import { env } from "@services";
 import { createCipheriv, createDecipheriv, randomBytes } from "node:crypto";
 const ENCRYPTION_KEY = Buffer.from(env.encryptionKey, "hex");
 const IV_LENGTH = 16;
@@ -39,4 +39,4 @@ class EncryptionService {
   }
 }
 
-export default EncryptionService;
+export default new EncryptionService();

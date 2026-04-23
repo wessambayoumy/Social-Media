@@ -47,20 +47,20 @@ const userSchema = new Schema<IUser>(
     },
 
     gender: {
-      type: String,
-      enum: Object.values(genderEnum),
+      type: Number,
+      enum: Object.values(genderEnum).splice(2,),
       default: genderEnum.male,
     },
 
     provider: {
-      type: String,
-      enum: Object.values(providerEnum),
+      type: Number,
+      enum: Object.values(providerEnum).splice(2,),
       default: providerEnum.system,
     },
 
     role: {
-      type: String,
-      enum: Object.values(roleEnum),
+      type: Number,
+      enum: Object.values(roleEnum).splice(2,),
       default: roleEnum.user,
     },
 

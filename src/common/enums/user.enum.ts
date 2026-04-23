@@ -1,12 +1,12 @@
 export enum genderEnum {
-  male = "0",
-  female = "1",
+  male,
+  female,
 }
 export enum providerEnum {
-  system = "0",
-  google = "1",
+  system,
+  google,
 }
 export enum roleEnum {
-  admin = "0",
-  user = "1",
+  admin,
+  user,
 }

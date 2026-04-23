@@ -1,5 +1,5 @@
 import { Types } from "mongoose";
-import { roleEnum } from "../enums/user.enum.js";
+import { roleEnum } from "@enums";
 
 declare global {
   namespace Express {

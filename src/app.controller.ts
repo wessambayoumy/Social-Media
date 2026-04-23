@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
-import { env } from "@config";
+import { env, CacheService } from "@services";
 import { globalErrorHandler, successResponseInterceptor } from "@response";
 import { connectDB } from "@/database";
 import { rateLimit } from "express-rate-limit";
@@ -9,7 +9,6 @@ import { authRouter } from "@auth";
 import { userRouter } from "@user";
 import { postRouter } from "@post";
 import { commentRouter } from "@comment";
-import { connectCacheDB } from "@cache";
 
 export const bootstrap = async () => {
   const app = express();
@@ -21,7 +20,7 @@ export const bootstrap = async () => {
     rateLimit({ windowMs: env.rateLimitTime, limit: env.rateLimitCount }),
   );
   await connectDB();
-  await connectCacheDB();
+  await CacheService.connectCacheDB();
   app.use("/auth", authRouter);
   app.use("/users", userRouter);
   app.use("/posts", postRouter);

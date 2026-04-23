@@ -46,11 +46,11 @@ abstract class DBRepository<TRawDoc> {
     const options = "options" in params ? params.options : undefined;
 
     if (Array.isArray(data)) {
-      const result = await this.model.insertMany(data as any, options!);
+      const result = await this.model.create(data as any, options!);
       return result as unknown as HydratedDocument<TRawDoc>[];
     }
 
-    return (await this.model.create(data as any)) as HydratedDocument<TRawDoc>;
+    return (await this.model.create(data as any)) ;
   }
 
   async find(
@@ -66,9 +66,10 @@ abstract class DBRepository<TRawDoc> {
     options,
   }: FindParams<TRawDoc>): Promise<any> {
     const doc = this.model.find(filter, projection, options);
-    if (options?.populate) doc.populate(options.populate as PopulateOptions[]);
-    if (options?.lean) doc.lean(options.lean);
-    if (options!["select"]) doc.select(options!["select"]);
+    if (!options) return await doc.exec();
+    if (options.populate) doc.populate(options.populate as PopulateOptions[]);
+    if (options.lean) doc.lean(options.lean);
+    if (options["select"]) doc.select(options["select"]);
     return await doc.exec();
   }
 
@@ -86,10 +87,11 @@ abstract class DBRepository<TRawDoc> {
     options,
   }: FindOneParams<TRawDoc>): Promise<any> {
     const doc = this.model.findOne(filter, projection, options);
-    if (options?.populate) doc.populate(options.populate as PopulateOptions[]);
-    if (options?.lean) doc.lean(options.lean);
-    if (options!["select"]) doc.select(options!["select"]);
-    return await doc;
+    if (!options) return await doc.exec();
+    if (options.populate) doc.populate(options.populate as PopulateOptions[]);
+    if (options.lean) doc.lean(options.lean);
+    if (options["select"]) doc.select(options["select"]);
+    return await doc.exec();
   }
 
   async findById(
@@ -104,9 +106,10 @@ abstract class DBRepository<TRawDoc> {
     options,
   }: FindByIdParams<TRawDoc>): Promise<any> {
     const doc = this.model.findById(id, projection, options);
-    if (options?.populate) doc.populate(options.populate as PopulateOptions[]);
-    if (options?.lean) doc.lean(options.lean);
-    if (options!["select"]) doc.select(options!["select"]);
+    if (!options) return await doc.exec();
+    if (options.populate) doc.populate(options.populate as PopulateOptions[]);
+    if (options.lean) doc.lean(options.lean);
+    if (options["select"]) doc.select(options["select"]);
     return await doc.exec();
   }
 

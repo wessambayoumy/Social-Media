@@ -1,0 +1,24 @@
+meta {
+  name: disable 2FA
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/auth/disable2FA
+  body: none
+  auth: bearer
+}
+
+headers {
+  User-Agent: insomnia/12.5.0
+}
+
+auth:bearer {
+  token: 
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -7,7 +7,7 @@ import {
   decode,
   DecodeOptions,
 } from "jsonwebtoken";
-import { env } from "@config";
+import { env } from "@services";
 import { v4 } from "uuid";
 import { JwtDetails } from "@interfaces";
 
@@ -19,7 +19,6 @@ class JwtService {
   ): string =>
     sign(payload, secret, {
       ...options,
-      expiresIn: env.jwtExpiry,
       jwtid: v4(),
       issuer: env.jwtIssuer,
     });
@@ -30,10 +29,8 @@ class JwtService {
     options?: VerifyOptions,
   ): T => verify(token, secret, options) as T;
 
-  decode = (token: string,options?:DecodeOptions): JwtDetails | null =>
+  decode = (token: string, options?: DecodeOptions): JwtDetails | null =>
     decode(token, options) as JwtDetails | null;
-
-  
 }
 
-export default  JwtService;
+export default new JwtService();
