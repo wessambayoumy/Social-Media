@@ -8,17 +8,11 @@ import {
   NotFoundError,
   UnAuthorizedError,
 } from "@response";
-import {
-  EncryptionService,
-  generatePassword,
-  HashService,
-  JwtService,
-} from "@security";
+import { generatePassword, HashService, JwtService } from "@security";
 import { EventEmitter } from "node:events";
 import { Types } from "mongoose";
 import { providerEnum, roleEnum } from "@enums";
 import { OAuth2Client } from "google-auth-library";
-import de from "zod/v4/locales/de.js";
 
 class AuthService {
   private readonly event = new EventEmitter();
@@ -67,9 +61,9 @@ class AuthService {
         fName,
         lName,
         email,
-        ...(password && { password: await HashService.hash(password) }),
+        ...(password && { password }),
         ...(phoneNumber && {
-          phoneNumber: EncryptionService.encrypt(phoneNumber),
+          phoneNumber,
         }),
         ...(profilePicture && { profilePicture }),
         ...(age && { age }),
@@ -194,7 +188,7 @@ class AuthService {
     if (newPassword !== reNewPassword) {
       throw new ConflictError("New passwords don't match");
     }
-    user.password = await HashService.hash(newPassword);
+    user.password = newPassword;
 
     await user.save();
     return user;
@@ -253,7 +247,7 @@ class AuthService {
       }
       case `forgetPassword/${user._id}`: {
         const temp = generatePassword();
-        user.password = await HashService.hash(temp);
+        user.password = temp;
         data = {
           message: `Use this temporary password to update your password.`,
           temp,

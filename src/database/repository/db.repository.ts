@@ -50,7 +50,7 @@ abstract class DBRepository<TRawDoc> {
       return result as unknown as HydratedDocument<TRawDoc>[];
     }
 
-    return (await this.model.create(data as any)) ;
+    return await this.model.create(data as any);
   }
 
   async find(
@@ -118,14 +118,22 @@ abstract class DBRepository<TRawDoc> {
     update,
     options,
   }: UpdateOneParams<TRawDoc>): Promise<UpdateResult> {
-    return await this.model.updateOne(filter, update, options);
+    return await this.model.updateOne(
+      filter,
+      { $inc: { __v: 1 }, ...update },
+      options,
+    );
   }
   async updateMany({
     filter,
     update,
     options,
   }: UpdateManyParams<TRawDoc>): Promise<UpdateResult> {
-    return await this.model.updateMany(filter, update, options);
+    return await this.model.updateMany(
+      filter,
+      { $inc: { __v: 1 }, ...update },
+      options,
+    );
   }
 
   async findOneAndUpdate({
@@ -133,14 +141,22 @@ abstract class DBRepository<TRawDoc> {
     update = { new: true },
     options,
   }: FindOneAndUpdateParams<TRawDoc>): Promise<HydratedDocument<TRawDoc> | null> {
-    return await this.model.findOneAndUpdate(filter, update, options);
+    return await this.model.findOneAndUpdate(
+      filter,
+      { $inc: { __v: 1 }, ...update },
+      options,
+    );
   }
   async findByIdAndUpdate({
     id,
     update = { new: true },
     options,
   }: FindByIdAndUpdateParams<TRawDoc>): Promise<HydratedDocument<TRawDoc> | null> {
-    return await this.model.findByIdAndUpdate(id, update, options);
+    return await this.model.findByIdAndUpdate(
+      id,
+      { $inc: { __v: 1 }, ...update },
+      options,
+    );
   }
 
   async deleteOne({

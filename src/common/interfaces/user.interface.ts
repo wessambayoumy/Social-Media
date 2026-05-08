@@ -13,8 +13,10 @@ export interface IUser {
   provider: providerEnum;
   role: roleEnum;
   views: number;
-  signOutDate: Date;
+  signOutAt: Date;
   twoFactorEnabled?: boolean;
   createdAt: Date;
   updatedAt: Date;
+  deletedAt: Date;
+  restoredAt: Date;
 }

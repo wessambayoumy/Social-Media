@@ -1,6 +1,8 @@
-import mongoose, { Model, model, Schema } from "mongoose";
+import mongoose, { HydratedDocument, Model, model, Schema } from "mongoose";
 import { IUser } from "@interfaces";
 import { genderEnum, providerEnum, roleEnum } from "@enums";
+import { ConflictError } from "@response";
+import { EncryptionService, HashService } from "@security";
 
 const userSchema = new Schema<IUser>(
   {
@@ -48,19 +50,19 @@ const userSchema = new Schema<IUser>(
 
     gender: {
       type: Number,
-      enum: Object.values(genderEnum).splice(2,),
+      enum: Object.values(genderEnum).splice(2),
       default: genderEnum.male,
     },
 
     provider: {
       type: Number,
-      enum: Object.values(providerEnum).splice(2,),
+      enum: Object.values(providerEnum).splice(2),
       default: providerEnum.system,
     },
 
     role: {
       type: Number,
-      enum: Object.values(roleEnum).splice(2,),
+      enum: Object.values(roleEnum).splice(2),
       default: roleEnum.user,
     },
 
@@ -69,7 +71,9 @@ const userSchema = new Schema<IUser>(
       default: 0,
     },
 
-    signOutDate: Date,
+    signOutAt: Date,
+    deletedAt: Date,
+    restoredAt: Date,
 
     profilePicture: String,
 
@@ -80,6 +84,7 @@ const userSchema = new Schema<IUser>(
   },
   {
     strict: true,
+    strictQuery: true,
     timestamps: true,
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
@@ -98,6 +103,49 @@ userSchema
   .get(function () {
     return `${this.fName} ${this.lName}`;
   });
+
+userSchema.pre("validate", function () {
+  if (this.password && this.provider !== providerEnum.system)
+    throw new ConflictError(
+      "Password should not be provided for non-system providers",
+    );
+});
+
+userSchema.pre("save", async function () {
+  if (this.password && this.isModified("password"))
+    this.password = await HashService.hash(this.password);
+
+  if (this.phoneNumber && this.isModified("phoneNumber"))
+    this.phoneNumber = EncryptionService.encrypt(this.phoneNumber);
+});
+
+userSchema.pre(["findOne", "find"], function () {
+  const query = this.getQuery();
+  if (query["paranoid"])
+    this.setQuery({ deletedAt: { $exists: false }, ...query });
+  else this.setQuery({ ...query });
+});
+
+userSchema.pre(["updateOne", "findOneAndUpdate"], function () {
+  const query = this.getQuery();
+  const update = this.getUpdate() as HydratedDocument<IUser>;
+  if (update.deletedAt) {
+    this.setUpdate({ $unset: { restoredAt: 1 }, ...update });
+  }
+  if (update.restoredAt) {
+    this.setUpdate({ $unset: { deletedAt: 1 }, ...update });
+    this.setQuery({ deletedAt: { $exists: true }, ...this.getQuery() });
+  }
+  if (query["paranoid"])
+    this.setQuery({ deletedAt: { $exists: false }, ...query });
+  else this.setQuery({ ...query });
+});
+
+userSchema.pre(["deleteOne", "findOneAndDelete"], function () {
+  const query = this.getQuery();
+  if (query["force"]) this.setQuery({ ...query });
+  else this.setQuery({ deletedAt: { $exists: true }, ...query });
+});
 
 const userModel: Model<IUser> =
   mongoose.models["users"] || model("users", userSchema);
