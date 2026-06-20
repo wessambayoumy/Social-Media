@@ -1,5 +1,5 @@
 import nodemailer from "nodemailer";
-import { env ,CacheService} from "@services";
+import { env ,cacheService} from "@services";
 import { HashService } from "@security";
 import { ConflictError } from "@response";
 import EventEmitter from "node:events";
@@ -43,7 +43,7 @@ event.on(
   ) => {
     const { ex = 5, text = `this code will expire in ${ex} minutes` } = options;
 
-    if (await CacheService.exists(otpName))
+    if (await cacheService.exists(otpName))
       throw new ConflictError("otp name taken");
     const otp = Math.ceil(Math.random() * 1000000)
       .toString()
@@ -55,7 +55,7 @@ event.on(
       `<h3>Your OTP code is: ${otp}</h3>`,
       text,
     );
-    await CacheService.set({
+    await cacheService.set({
       key: otpName,
       value: await HashService.hash(otp),
       options: {

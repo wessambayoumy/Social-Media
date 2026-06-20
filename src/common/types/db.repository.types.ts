@@ -1,5 +1,6 @@
 import type {
   CreateOptions,
+  HydratedDocument,
   MongooseBaseQueryOptions,
   ProjectionType,
   QueryFilter,
@@ -32,7 +33,7 @@ export interface CreateMultipleParams<TRawDoc> {
 export interface FindParamsLean<TRawDoc> {
   filter?: QueryFilter<TRawDoc>;
   projection?: ProjectionType<TRawDoc>;
-  options?: QueryOptions<TRawDoc> & { lean?: true };
+  options?: QueryOptions<TRawDoc> & { lean: true };
 }
 
 /**
@@ -59,7 +60,7 @@ export interface FindParams<TRawDoc> {
 export interface FindOneParamsLean<TRawDoc> {
   filter?: QueryFilter<TRawDoc>;
   projection?: ProjectionType<TRawDoc>;
-  options?: (QueryOptions<TRawDoc> & { lean?: true }) | null;
+  options?: QueryOptions<TRawDoc> & { lean?: true };
 }
 
 /**
@@ -68,7 +69,7 @@ export interface FindOneParamsLean<TRawDoc> {
 export interface FindOneParamsHydrated<TRawDoc> {
   filter?: QueryFilter<TRawDoc>;
   projection?: ProjectionType<TRawDoc>;
-  options?: (QueryOptions<TRawDoc> & { lean?: false }) | null;
+  options?: QueryOptions<TRawDoc> & { lean?: false };
 }
 
 /**

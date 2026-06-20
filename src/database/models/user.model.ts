@@ -1,7 +1,13 @@
-import mongoose, { HydratedDocument, Model, model, Schema } from "mongoose";
+import mongoose, {
+  HydratedDocument,
+  Model,
+  model,
+  Schema,
+  Types,
+} from "mongoose";
 import { IUser } from "@interfaces";
 import { genderEnum, providerEnum, roleEnum } from "@enums";
-import { ConflictError } from "@response";
+import { BadRequestError, ConflictError } from "@response";
 import { EncryptionService, HashService } from "@security";
 
 const userSchema = new Schema<IUser>(
@@ -50,19 +56,23 @@ const userSchema = new Schema<IUser>(
 
     gender: {
       type: Number,
-      enum: Object.values(genderEnum).splice(2),
+      enum: Object.values(genderEnum).splice(
+        Object.values(genderEnum).length / 2,
+      ),
       default: genderEnum.male,
     },
 
     provider: {
       type: Number,
-      enum: Object.values(providerEnum).splice(2),
+      enum: Object.values(providerEnum).splice(
+        Object.values(providerEnum).length / 2,
+      ),
       default: providerEnum.system,
     },
 
     role: {
       type: Number,
-      enum: Object.values(roleEnum).splice(2),
+      enum: Object.values(roleEnum).splice(Object.values(roleEnum).length / 2),
       default: roleEnum.user,
     },
 
@@ -77,10 +87,13 @@ const userSchema = new Schema<IUser>(
 
     profilePicture: String,
 
+    coverPhotos: [String],
+
     twoFactorEnabled: {
       type: Boolean,
       default: false,
     },
+    friends: [{ type: Types.ObjectId, ref: "users" }],
   },
   {
     strict: true,
@@ -126,9 +139,11 @@ userSchema.pre(["findOne", "find"], function () {
   else this.setQuery({ ...query });
 });
 
-userSchema.pre(["updateOne", "findOneAndUpdate"], function () {
+userSchema.pre(["updateOne", "findOneAndUpdate", "updateMany"], function () {
   const query = this.getQuery();
   const update = this.getUpdate() as HydratedDocument<IUser>;
+
+  if (update.$set.length <= 1) throw new BadRequestError("No fields to update");
   if (update.deletedAt) {
     this.setUpdate({ $unset: { restoredAt: 1 }, ...update });
   }

@@ -48,13 +48,19 @@
       "@repository": ["./src/database/repository"],
       "@enums": ["./src/common/enums"],
       "@services": ["./src/common/services"],
-      "@types": ["./src/common/types"],
-      "@utils": ["./src/common/utils"],
       "@interfaces": ["./src/common/interfaces"],
+      "@types": ["./src/common/types"],
+      "@upload": ["./src/common/utils/upload"],
       "@security": ["./src/common/utils/security"],
+      "@filters": ["./src/common/utils/filters"],
       "@auth": ["./src/modules/auth"],
       "@user": ["./src/modules/user"],
       "@post": ["./src/modules/post"],
+      "@reaction": ["./src/modules/reaction"],
+      "@notification": ["./src/modules/notification"],
+      "@message": ["./src/modules/message"],
+      "@socket": ["./src/modules/socket"],
+      "@chat": ["./src/modules/chat"],
       "@comment": ["./src/modules/comment"],
       "@response": ["./src/middleware/response"]
     },
@@ -63,6 +69,6 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
   },
-  "include": ["src", "config"],
+  "include": ["src", "config", "src/common/interfaces/حخسف/.interface.ts"],
   "exclude": ["node_modules", "dist"]
 }

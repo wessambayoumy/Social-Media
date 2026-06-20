@@ -1,6 +1,6 @@
 import * as authDTO from "./auth.dto";
 import { IUser, JwtDetails } from "@interfaces";
-import { env, CacheService } from "@services";
+import { env, s3Service, cacheService } from "@services";
 import { UserRepository } from "@repository";
 import {
   BadRequestError,
@@ -19,7 +19,7 @@ class AuthService {
 
   async refreshToken(token: string) {
     if (!token) throw new UnAuthorizedError("Token is required");
-    if (await CacheService.get(`revokeId:${JwtService.decode(token)?.jti}`))
+    if (await cacheService.get(`revokeId:${JwtService.decode(token)?.jti}`))
       throw new UnAuthorizedError("Token Revoked");
 
     const decoded = JwtService.decode(token) as JwtDetails;
@@ -38,16 +38,10 @@ class AuthService {
       { expiresIn: env.jwtExpiryAccess },
     );
   }
-
-  async signUp({
-    fName,
-    lName,
-    email,
-    password,
-    phoneNumber,
-    profilePicture,
-    age,
-  }: authDTO.SignUpDTO): Promise<IUser> {
+  async signUp(
+    { fName, lName, email, password, phoneNumber, age }: authDTO.SignUpDTO,
+    file: Express.Multer.File,
+  ): Promise<IUser> {
     if (
       await UserRepository.findOne({
         filter: { email },
@@ -65,21 +59,24 @@ class AuthService {
         ...(phoneNumber && {
           phoneNumber,
         }),
-        ...(profilePicture && { profilePicture }),
         ...(age && { age }),
       },
     });
-
     if (!user) throw new BadRequestError("Failed to create user");
-
-    let x = user;
-    delete x.password;
-
-    console.log(x);
-
-    return x;
+    if (file)
+      user.profilePicture = await s3Service.uploadOneFile({
+        file,
+        path: `users/user-${user.id}/profilePicture`,
+      });
+    else {
+      user.profilePicture = `${env.appName}/defaults/profilePicture/default-pfp.gif`;
+    }
+    await user.save();
+    let userWithoutPassword = user;
+    delete userWithoutPassword.password;
+    return userWithoutPassword;
   }
-  async signIn({ email, password }: authDTO.SignInDTO) {
+  async signIn({ email, password, FCM }: authDTO.SignInDTO) {
     let user = await UserRepository.findOne({
       filter: { email },
       options: { select: "password" },
@@ -87,6 +84,12 @@ class AuthService {
 
     if (!user || !(await HashService.compareHash(password, user.password!)))
       throw new UnAuthorizedError("Invalid email or password");
+
+    if (FCM)
+      await cacheService.set({
+        key: cacheService.FCM_key(user._id),
+        value: FCM,
+      });
 
     const AccessToken = JwtService.signToken(
       {
@@ -160,15 +163,15 @@ class AuthService {
   async signOut(token: string) {
     let { jti } = JwtService.decode(token) as { jti: string };
 
-    await CacheService.set({
+    await cacheService.set({
       key: `revokeId:${jti}`,
       value: 1,
-      options: { expiration: { type: "EX", value: 7 * 24 * 60 * 60 } },
+      options: { expiration: { type: "EX", value: env.jwtExpiryAccess } },
     });
   }
   async signOutFromAll(userId: Types.ObjectId) {
     const user = await UserRepository.findById({ id: userId });
-    user.signOutDate = new Date();
+    user.signOutAt = new Date();
     await user.save();
   }
   async updatePassword(
@@ -220,12 +223,11 @@ class AuthService {
     this.event.emit(`disable2FA/${user._id}`, user.email);
   }
   async verifyOtp({ code, email, name }: authDTO.VerifyOtpDTO) {
-    0;
     const user = await UserRepository.findOne({ filter: { email } });
 
     if (!user) throw new NotFoundError("user not found");
 
-    const redisOtp = await CacheService.get(name);
+    const redisOtp = await cacheService.get(name);
     if (!redisOtp) throw new BadRequestError("otp not sent");
     if (!(await HashService.compareHash(code, redisOtp)))
       throw new UnAuthorizedError("Incorrect otp");

@@ -47,7 +47,7 @@ abstract class DBRepository<TRawDoc> {
 
     if (Array.isArray(data)) {
       const result = await this.model.create(data as any, options!);
-      return result as unknown as HydratedDocument<TRawDoc>[];
+      return result as HydratedDocument<TRawDoc>[];
     }
 
     return await this.model.create(data as any);
@@ -55,10 +55,10 @@ abstract class DBRepository<TRawDoc> {
 
   async find(
     params: FindParamsLean<TRawDoc>,
-  ): Promise<FlattenMaps<TRawDoc> | null>;
+  ): Promise<FlattenMaps<TRawDoc>[]>;
   async find(
     params: FindParamsHydrated<TRawDoc>,
-  ): Promise<HydratedDocument<TRawDoc> | null>;
+  ): Promise<HydratedDocument<TRawDoc>[]>;
 
   async find({
     filter,

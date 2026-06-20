@@ -2,7 +2,7 @@ import { RequestHandler } from "express";
 import { UnAuthorizedError } from "@response";
 import { JwtDetails } from "@interfaces";
 import { JwtService } from "@security";
-import { env, CacheService } from "@services";
+import { env, cacheService } from "@services";
 import { roleEnum } from "@enums";
 import { Secret } from "jsonwebtoken";
 import { Types } from "mongoose";
@@ -31,8 +31,8 @@ export const authMiddleware: RequestHandler = async (req, _res, next) => {
     throw new UnAuthorizedError("Invalid token payload");
 
   if (
-    user.signOutDate?.getTime() > decoded.iat! * 1000 ||
-    (await CacheService.get(`revokeId:${decoded.jti}`))
+    user.signOutAt?.getTime() > decoded.iat! * 1000 ||
+    (await cacheService.get(`revokeId:${decoded.jti}`))
   )
     throw new UnAuthorizedError("Token Revoked");
 

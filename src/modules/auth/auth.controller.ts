@@ -2,6 +2,7 @@ import { Router, Request, Response } from "express";
 import * as authValidation from "./auth.validation";
 import { authMiddleware, validationMiddleware } from "@/middleware";
 import authService from "./auth.service";
+import { uploadFile } from "@upload";
 
 const authRouter = Router();
 
@@ -12,9 +13,14 @@ authRouter.post("/refreshToken", async (req: Request, res: Response) => {
 
 authRouter.post(
   "/signUp",
+  uploadFile().single("profilePicture"),
   validationMiddleware(authValidation.signUpSchema),
   async (req: Request, res: Response) => {
-    const user = await authService.signUp(req.body);
+    const user = await authService.signUp(
+      req.body,
+      req.file as Express.Multer.File,
+    );
+
     res.json({ message: "User registered successfully", user });
   },
 );

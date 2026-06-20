@@ -4,4 +4,4 @@ class CommentService {
   // Add comment service methods here
 }
 
-export default CommentService;
+export default new CommentService();

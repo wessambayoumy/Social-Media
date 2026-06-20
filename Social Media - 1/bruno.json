@@ -1,9 +1,0 @@
-{
-  "version": "1",
-  "name": "Social Media - 1",
-  "type": "collection",
-  "ignore": [
-    "node_modules",
-    ".git"
-  ]
-}

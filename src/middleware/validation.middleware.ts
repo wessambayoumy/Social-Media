@@ -14,6 +14,9 @@ export const validationMiddleware = (
   return (req, _res, next) => {
     const errors: ValidationError[] = [];
 
+    // if (req.file) req.body.file = req.file;
+    // if (req.files) req.body.files = req.files;
+
     for (const key of Object.keys(schema) as ValidationKey[]) {
       const value = schema[key]?.safeParse(req[key]);
       if (!value?.success) {

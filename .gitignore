@@ -1,4 +1,5 @@
 /node_modules
 /dist
 /config/.env*
+/config/firebase.service.account.json
 !/config/.env.example

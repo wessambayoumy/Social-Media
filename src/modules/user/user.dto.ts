@@ -1,4 +1,4 @@
-// Data Transfer Objects for User module
-export interface UserDTO {
-  // Add DTO properties here
-}
+import z from "zod";
+import { updateUserSchema } from "./user.validation";
+
+export type UpdateUserDTO = z.infer<typeof updateUserSchema.body>;

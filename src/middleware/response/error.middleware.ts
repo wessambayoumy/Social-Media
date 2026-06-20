@@ -8,7 +8,6 @@ class AppError extends Error {
     this.name = this.constructor.name;
   }
 }
-
 export class BadRequestError extends AppError {
   constructor(message: string, cause?: unknown) {
     super(message, 400);
@@ -21,7 +20,6 @@ export class UnAuthorizedError extends AppError {
     this.cause = cause;
   }
 }
-
 export class NotFoundError extends AppError {
   constructor(message: string, cause?: unknown) {
     super(message, 404);
@@ -40,13 +38,13 @@ export class InternalServerError extends AppError {
     this.cause = cause;
   }
 }
-
-export const globalErrorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
+export const globalErrorHandler: ErrorRequestHandler = (err, _req, res) => {
+  console.log("error", err.message);
   let status = err instanceof AppError ? err.statusCode : 500;
   let message = err instanceof AppError ? err.message : "Internal Server Error";
-  res.status(status).json({
+  res.status(status || 500).json({
     error: message,
-    stack:process.env["NODE_ENV"] === "prod" ? undefined : err.stack,
+    stack: process.env["NODE_ENV"] === "prod" ? undefined : err.stack,
     cause: err.cause,
   });
 };

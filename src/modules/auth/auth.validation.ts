@@ -6,7 +6,7 @@ const passwordRegex =
 
 export const signUpSchema = {
   body: z
-    .object({
+    .strictObject({
       fName: z
         .string()
         .min(3, "First name must be at least 3 characters")
@@ -31,11 +31,11 @@ export const signUpSchema = {
           "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character",
         ),
       phoneNumber: z.string().optional(),
-      profilePicture: z.string().optional(),
-      age: z.number().optional(),
+      age: z.coerce.number().optional(),
       gender: z.enum(genderEnum).optional(),
       provider: z.enum(providerEnum).optional(),
       role: z.enum(roleEnum).optional(),
+      profilePicture: z.object(z.string()).optional(),
     })
     .refine((data) => data.password === data.confirmPassword, {
       message: "Passwords don't match",
@@ -44,7 +44,7 @@ export const signUpSchema = {
 };
 
 export const signInSchema = {
-  body: z.object({
+  body: z.strictObject({
     email: z.email("Invalid email address"),
     password: z
       .string()
@@ -53,12 +53,13 @@ export const signInSchema = {
         passwordRegex,
         "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character",
       ),
+      FCM: z.string().optional(),
   }),
 };
 
 export const updatePasswordSchema = {
   body: z
-    .object({
+    .strictObject({
       currentPassword: z
         .string()
         .min(8, "Password must be at least 8 characters")
@@ -88,7 +89,7 @@ export const updatePasswordSchema = {
 };
 
 export const verifyOtpSchema = {
-  body: z.object({
+  body: z.strictObject({
     code: z.string().length(6, "OTP must be 6 digits"),
     name: z.string(),
     email: z.email("Invalid email address"),
@@ -96,7 +97,7 @@ export const verifyOtpSchema = {
 };
 
 export const googleSignUpSchema = {
-  body: z.object({
+  body: z.strictObject({
     userName: z
       .string()
       .min(3, "Username must be at least 3 characters")
