@@ -1,11 +1,18 @@
-import mongoose, { HydratedDocument, Model, model, Schema } from "mongoose";
+import mongoose, {
+  HydratedDocument,
+  Model,
+  model,
+  Schema,
+  Types,
+} from "mongoose";
 import { BadRequestError } from "@response";
 import { IComment } from "@interfaces";
 
 const commentSchema = new Schema<IComment>(
   {
-    postId: { type: String, required: true },
-    userId: { type: String, required: true },
+    postId: { type: Types.ObjectId, required: true },
+    userId: { type: Types.ObjectId, required: true },
+    commentId: { type: Types.ObjectId, required: true },
     content: { type: String, required: true },
     attachments: [String],
     deletedAt: Date,
@@ -19,6 +26,11 @@ const commentSchema = new Schema<IComment>(
     toObject: { virtuals: true },
   },
 );
+commentSchema.virtual("replies", {
+  localField: "_id",
+  foreignField: "commentId",
+  ref: "Comment",
+});
 
 commentSchema.pre(["findOne", "find"], function () {
   const query = this.getQuery();

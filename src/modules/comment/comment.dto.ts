@@ -1,4 +1,4 @@
-// Data Transfer Objects for Comment module
-export interface CommentDTO {
-  // Add DTO properties here
-}
+import z from "zod";
+import { createCommentSchema } from "./comment.validation";
+
+export type createCommentDto = z.infer<typeof createCommentSchema.body>;

@@ -93,7 +93,6 @@ const userSchema = new Schema<IUser>(
       type: Boolean,
       default: false,
     },
-    friends: [{ type: Types.ObjectId, ref: "users" }],
   },
   {
     strict: true,

@@ -6,10 +6,14 @@ import { uploadFile } from "@upload";
 
 const authRouter = Router();
 
-authRouter.post("/refreshToken", async (req: Request, res: Response) => {
-  const token = await authService.refreshToken(req.body.token);
-  res.json({ message: "New access token generated", token });
-});
+authRouter.post(
+  "/refreshToken",
+  validationMiddleware(authValidation.refreshTokenSchema),
+  async (req: Request, res: Response) => {
+    const token = await authService.refreshToken(req.body.token);
+    res.json({ message: "New access token generated", token });
+  },
+);
 
 authRouter.post(
   "/signUp",
@@ -41,15 +45,23 @@ authRouter.post(
   },
 );
 
-authRouter.post("/verifyOtp", async (req: Request, res: Response) => {
-  await authService.verifyOtp(req.body);
-  res.status(200).json({ message: "2FA verified successfully" });
-});
+authRouter.post(
+  "/verifyOtp",
+  validationMiddleware(authValidation.verifyOtpSchema),
+  async (req: Request, res: Response) => {
+    await authService.verifyOtp(req.body);
+    res.status(200).json({ message: "2FA verified successfully" });
+  },
+);
 
-authRouter.patch("/resetPassword", async (req: Request, res: Response) => {
-  const user = await authService.resetPassword(req.body.email);
-  res.json({ message: "Password reset successfully", user });
-});
+authRouter.patch(
+  "/resetPassword",
+  validationMiddleware(authValidation.resetPasswordSchema),
+  async (req: Request, res: Response) => {
+    const user = await authService.resetPassword(req.body.email);
+    res.json({ message: "Password reset successfully", user });
+  },
+);
 
 authRouter.use(authMiddleware);
 
@@ -66,10 +78,14 @@ authRouter.post("/signOutFromAll", async (req: Request, res: Response) => {
   });
 });
 
-authRouter.patch("/updatePassword", async (req: Request, res: Response) => {
-  const user = await authService.updatePassword(req.body, req.userId);
-  res.json({ message: "Password updated successfully", user });
-});
+authRouter.patch(
+  "/updatePassword",
+  validationMiddleware(authValidation.updatePasswordSchema),
+  async (req: Request, res: Response) => {
+    const user = await authService.updatePassword(req.body, req.userId);
+    res.json({ message: "Password updated successfully", user });
+  },
+);
 
 authRouter.post("/enable2FA", async (req: Request, res: Response) => {
   await authService.enable2FA(req.userId);

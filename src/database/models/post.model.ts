@@ -43,6 +43,11 @@ const postSchema = new Schema<IPost>(
     toObject: { virtuals: true },
   },
 );
+postSchema.virtual("comments", {
+  localField: "_id",
+  foreignField: "postId",
+  ref: "Comment",
+});
 
 postSchema.pre(["findOne", "find", "countDocuments"], function () {
   const query = this.getQuery();

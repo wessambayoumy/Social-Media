@@ -96,6 +96,18 @@ export const verifyOtpSchema = {
   }),
 };
 
+export const refreshTokenSchema = {
+  body: z.strictObject({
+    token: z.string().min(1, "Token is required"),
+  }),
+};
+
+export const resetPasswordSchema = {
+  body: z.strictObject({
+    email: z.email("Invalid email address"),
+  }),
+};
+
 export const googleSignUpSchema = {
   body: z.strictObject({
     userName: z

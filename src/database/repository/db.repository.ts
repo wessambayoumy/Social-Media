@@ -53,9 +53,7 @@ abstract class DBRepository<TRawDoc> {
     return await this.model.create(data as any);
   }
 
-  async find(
-    params: FindParamsLean<TRawDoc>,
-  ): Promise<FlattenMaps<TRawDoc>[]>;
+  async find(params: FindParamsLean<TRawDoc>): Promise<FlattenMaps<TRawDoc>[]>;
   async find(
     params: FindParamsHydrated<TRawDoc>,
   ): Promise<HydratedDocument<TRawDoc>[]>;
@@ -66,11 +64,11 @@ abstract class DBRepository<TRawDoc> {
     options,
   }: FindParams<TRawDoc>): Promise<any> {
     const doc = this.model.find(filter, projection, options);
-    if (!options) return await doc.exec();
+    if (!options) return await doc;
     if (options.populate) doc.populate(options.populate as PopulateOptions[]);
     if (options.lean) doc.lean(options.lean);
     if (options["select"]) doc.select(options["select"]);
-    return await doc.exec();
+    return await doc;
   }
 
   async findOne(
@@ -87,11 +85,11 @@ abstract class DBRepository<TRawDoc> {
     options,
   }: FindOneParams<TRawDoc>): Promise<any> {
     const doc = this.model.findOne(filter, projection, options);
-    if (!options) return await doc.exec();
+    if (!options) return await doc;
     if (options.populate) doc.populate(options.populate as PopulateOptions[]);
     if (options.lean) doc.lean(options.lean);
     if (options["select"]) doc.select(options["select"]);
-    return await doc.exec();
+    return await doc;
   }
 
   async findById(
@@ -106,11 +104,11 @@ abstract class DBRepository<TRawDoc> {
     options,
   }: FindByIdParams<TRawDoc>): Promise<any> {
     const doc = this.model.findById(id, projection, options);
-    if (!options) return await doc.exec();
+    if (!options) return await doc;
     if (options.populate) doc.populate(options.populate as PopulateOptions[]);
     if (options.lean) doc.lean(options.lean);
     if (options["select"]) doc.select(options["select"]);
-    return await doc.exec();
+    return await doc;
   }
 
   async updateOne({

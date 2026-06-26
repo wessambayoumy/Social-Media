@@ -1,11 +1,19 @@
-import mongoose, {  Model, model, Schema } from "mongoose";
+import mongoose, { Model, model, Schema, Types } from "mongoose";
 import { IReaction } from "@interfaces";
+import { ReactionEnum } from "@enums";
 
 const reactionSchema = new Schema<IReaction>(
   {
-    postId: { type: String, required: true },
-    userId: { type: String, required: true },
-    emoji: { type: String, required: true },
+    ref: { type: String, required: true },
+    userId: { type: Types.ObjectId, required: true, ref: "users" },
+    emoji: {
+      type: Number,
+      enum: Object.values(ReactionEnum).splice(
+        Object.values(ReactionEnum).length / 2,
+      ),
+      default: ReactionEnum.like,
+    },
+    onModel: { type: String, required: true },
   },
   {
     strict: true,

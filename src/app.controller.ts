@@ -8,10 +8,12 @@ import { rateLimit } from "express-rate-limit";
 import { authRouter } from "@auth";
 import { userRouter } from "@user";
 import { postRouter } from "@post";
-import { chatRouter } from '@chat';
+import { chatRouter } from "@chat";
 import { commentRouter } from "@comment";
+import { reactionRouter } from "@reaction";
 import { fetchAndDownloadFile, fetchAndDownloadPreSigned } from "@upload";
 import { SocketGateway } from "@socket";
+import { friendRequestRouter } from "@/modules/friendRequest";
 
 export const bootstrap = async () => {
   const app = express();
@@ -51,13 +53,12 @@ export const bootstrap = async () => {
   app.use("/posts", postRouter);
   app.use("/comments", commentRouter);
   app.use("/chats", chatRouter);
-
-  
+  app.use("/friend-requests", friendRequestRouter);
 
   app.use(globalErrorHandler);
 
   const httpServer = app.listen(env.port, () => {
     console.log(`Server is running on port ${env.port}`);
   });
-   SocketGateway.initIO(httpServer);
+  SocketGateway.initIO(httpServer);
 };

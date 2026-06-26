@@ -1,12 +1,16 @@
 import { PostVisibilityEnum } from "@enums";
-import { HydratedDocument } from "mongoose";
+import { HydratedDocument, Types } from "mongoose";
 import { IUser } from "@interfaces";
-export const getVisibiltyFilter = (user: HydratedDocument<IUser>) => [
+
+export const getVisibiltyFilter = (
+  user: HydratedDocument<IUser>,
+  friendIds: Types.ObjectId[] = [],
+) => [
   { visibility: PostVisibilityEnum.public },
   { visibility: PostVisibilityEnum.private, userId: user.id },
   {
     visibility: PostVisibilityEnum.friendsOnly,
-    userId: { $in: [user.id], ...(user.friends || []) },
+    userId: { $in: [user._id, ...friendIds] },
   },
-  { mentions: { $in: [user.id] } },
+  { mentions: { $in: [user._id] } },
 ];

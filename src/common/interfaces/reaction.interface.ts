@@ -1,7 +1,9 @@
 import { ReactionEnum } from "@enums";
+import { Types } from "mongoose";
 
 export interface IReaction {
-  postId: string;
-  userId: string;
+  ref: string;
+  userId: Types.ObjectId;
   emoji: ReactionEnum;
+  onModel:string
 }

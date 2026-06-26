@@ -1,8 +1,9 @@
 import { Router } from "express";
 import UserService from "./user.service";
-import { authMiddleware } from "@/middleware";
+import { authMiddleware, validationMiddleware } from "@/middleware";
 import { uploadFile } from "@upload";
 import { chatRouter } from "@chat";
+import * as userValidation from "./user.validation";
 
 const userRouter = Router();
 userRouter.use("/:userId", chatRouter);
@@ -25,6 +26,7 @@ userRouter.patch(
     { name: "profilePicture", maxCount: 1 },
     { name: "coverPhotos", maxCount: 10 },
   ]),
+  validationMiddleware(userValidation.updateUserSchema),
   async (req, res) => {
     const uploadedFiles = req.files as Record<string, Express.Multer.File[]>;
 

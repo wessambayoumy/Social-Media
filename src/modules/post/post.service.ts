@@ -1,4 +1,4 @@
-import { PostRepository, UserRepository } from "@repository";
+import { FriendshipRepository, PostRepository, UserRepository } from "@repository";
 import { Types } from "mongoose";
 import * as PostDto from "./post.dto";
 import { getVisibiltyFilter } from "@filters";
@@ -6,19 +6,34 @@ import { IPost } from "@interfaces";
 import { BadRequestError, NotFoundError } from "@response";
 import { s3Service } from "@services";
 
+async function getFriendIds(userId: Types.ObjectId): Promise<Types.ObjectId[]> {
+  const friendships = await FriendshipRepository.find({
+    filter: { $or: [{ userA: userId }, { userB: userId }] },
+  });
+  return friendships.map((f) =>
+    (f.userA as Types.ObjectId).equals(userId) ? (f.userB as Types.ObjectId) : (f.userA as Types.ObjectId),
+  );
+}
+
 class PostService {
   async getAllPosts(
     userId: Types.ObjectId,
     { limit = 10, page = 1, search }: PostDto.getPostsDto,
   ) {
-    const user = await UserRepository.findById({ id: userId });
+    const [user, friendIds] = await Promise.all([
+      UserRepository.findById({ id: userId }),
+      getFriendIds(userId),
+    ]);
     return await PostRepository.paginate({
       filter: {
-        $or: getVisibiltyFilter(user),
+        $or: getVisibiltyFilter(user, friendIds),
         ...(search && { content: { $regex: search, $options: "i" } }),
       },
       page,
       limit,
+      options: {
+        populate: [{ path: "comments", populate: [{ path: "replies", }] }],
+      },
     });
   }
   async getPostById(id: Types.ObjectId) {

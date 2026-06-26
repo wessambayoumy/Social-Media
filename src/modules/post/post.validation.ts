@@ -31,9 +31,17 @@ export const createPostSchema = {
 
 export const getPostsSchema = {
   query: z.strictObject({
-    page: z.number().default(1),
-    limit: z.number().default(10),
-    search: z.string().max(100),
-  }
-  ),
+    page: z.coerce.number().default(1),
+    limit: z.coerce.number().default(10),
+    search: z.string().max(100).optional(),
+  }),
+};
+
+export const updatePostSchema = {
+  body: z.strictObject({
+    content: z.string().min(1).max(500).optional(),
+    files: z.array(z.object()).optional(),
+    visibility: z.enum(PostVisibilityEnum).optional(),
+    mentions: z.array(z.string().regex(/^[0-9a-fA-F]{24}$/)).optional(),
+  }),
 };
